@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -94,10 +93,6 @@ func main() {
 	// read and parse the html page
 	// ========================================
 
-	var conn *tls.Conn
-
-	tlsConfig := http.DefaultTransport.(*http.Transport).TLSClientConfig
-
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			// https://github.com/sweetbbak/go-cloudflare-bypass/blob/main/reqwest/reqwest.go
@@ -105,27 +100,38 @@ func main() {
 			TLSClientConfig: &tls.Config{
 				MinVersion: tls.VersionTLS13,
 			},
-			DialTLS: func(network, addr string) (net.Conn, error) {
-				conn, err = tls.Dial(network, addr, tlsConfig)
-				return conn, err
-			},
 		},
 	}
 
 	userAgent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
 		"AppleWebKit/537.36 (KHTML, like Gecko) " +
-		fmt.Sprintf("Chrome/130.0.0.%d Safari/537.%d", rand.Intn(9999), rand.Intn(99))
+		fmt.Sprintf("Chrome/130.0.0.%d ", rand.Intn(99)) +
+		fmt.Sprintf("Safari/537.%d", rand.Intn(99))
 
-	req, _ := http.NewRequest("GET", PAGE_URL, nil)
-	req.Header.Set("User-Agent", userAgent)
+	var resp *http.Response
+	for retry := 1; retry <= 5; retry++ {
+		req, _ := http.NewRequest("GET", PAGE_URL, nil)
+		req.Header.Set("User-Agent", userAgent)
 
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		log.Fatalf("(!) failed to make request: %v", err)
+		resp, err = httpClient.Do(req)
+		if err == nil && resp.StatusCode == http.StatusOK {
+			break
+		}
+
+		if err != nil {
+			log.Printf("(!) failed to make request: %v", err)
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			log.Printf("(!) http error: %d", resp.StatusCode)
+		}
+
+		log.Printf("(!) retrying %d...", retry)
+		time.Sleep(2000)
 	}
 
-	if resp.StatusCode != http.StatusOK {
-		log.Fatalf("(!) http error: %d", resp.StatusCode)
+	if resp == nil {
+		log.Fatal("(!) failed retry")
 	}
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
