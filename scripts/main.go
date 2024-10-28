@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -93,12 +94,20 @@ func main() {
 	// read and parse the html page
 	// ========================================
 
+	var conn *tls.Conn
+
+	tlsConfig := http.DefaultTransport.(*http.Transport).TLSClientConfig
+
 	httpClient := &http.Client{
 		Transport: &http.Transport{
 			// https://github.com/sweetbbak/go-cloudflare-bypass/blob/main/reqwest/reqwest.go
 			// need to somehow set a tls config?
 			TLSClientConfig: &tls.Config{
 				MinVersion: tls.VersionTLS13,
+			},
+			DialTLS: func(network, addr string) (net.Conn, error) {
+				conn, err = tls.Dial(network, addr, tlsConfig)
+				return conn, err
 			},
 		},
 	}
