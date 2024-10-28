@@ -30,11 +30,14 @@ jobs:
           cache-dependency-path: "scripts/go.sum"
 
       - run: |
+          curl -A $USER_AGENT -Lo page.html $PAGE_URL
           go version
           go run main.go
         working-directory: "./scripts"
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          USER_AGENT: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36"
+          PAGE_URL: "https://help.bungie.net/hc/en-us/articles/360049199271-Destiny-Server-and-Update-Status"
 
       - uses: actions/configure-pages@v5
         id: pages

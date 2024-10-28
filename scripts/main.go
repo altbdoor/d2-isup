@@ -2,12 +2,9 @@ package main
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"log"
-	"math/rand"
-	"net/http"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -19,8 +16,6 @@ import (
 	"golang.org/x/net/html"
 	"google.golang.org/api/option"
 )
-
-const PAGE_URL = "https://help.bungie.net/hc/en-us/articles/360049199271-Destiny-Server-and-Update-Status"
 
 const systemInstruction = `You will be receiving a HTML page content, which describes zero or more maintenance windows for the game Destiny 2.
 
@@ -93,45 +88,9 @@ func main() {
 	// read and parse the html page
 	// ========================================
 
-	httpClient := &http.Client{
-		Transport: &http.Transport{
-			// https://github.com/sweetbbak/go-cloudflare-bypass/blob/main/reqwest/reqwest.go
-			// need to somehow set a tls config?
-			TLSClientConfig: &tls.Config{
-				MinVersion: tls.VersionTLS13,
-			},
-		},
-	}
-
-	var resp *http.Response
-	for retry := 1; retry <= 5; retry++ {
-		userAgent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-			"AppleWebKit/537.36 (KHTML, like Gecko) " +
-			fmt.Sprintf("Chrome/130.0.0.%d ", rand.Intn(99)) +
-			fmt.Sprintf("Safari/537.%d", rand.Intn(99))
-
-		req, _ := http.NewRequest("GET", PAGE_URL, nil)
-		req.Header.Set("User-Agent", userAgent)
-
-		resp, err = httpClient.Do(req)
-		if err == nil && resp.StatusCode == http.StatusOK {
-			break
-		}
-
-		if err != nil {
-			log.Printf("(!) failed to make request: %v", err)
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			log.Printf("(!) http error: %d", resp.StatusCode)
-		}
-
-		log.Printf("(!) retrying %d...", retry)
-		time.Sleep(2 * time.Second)
-	}
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	resp.Body.Close()
+	page, _ := os.Open(filepath.Join(baseDir, "./scripts/page.html"))
+	doc, err := goquery.NewDocumentFromReader(page)
+	page.Close()
 
 	if err != nil {
 		log.Fatalf("(!) failed to parse html: %v", err)
