@@ -103,13 +103,13 @@ func main() {
 		},
 	}
 
-	userAgent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
-		"AppleWebKit/537.36 (KHTML, like Gecko) " +
-		fmt.Sprintf("Chrome/130.0.0.%d ", rand.Intn(99)) +
-		fmt.Sprintf("Safari/537.%d", rand.Intn(99))
-
 	var resp *http.Response
 	for retry := 1; retry <= 5; retry++ {
+		userAgent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) " +
+			"AppleWebKit/537.36 (KHTML, like Gecko) " +
+			fmt.Sprintf("Chrome/130.0.0.%d ", rand.Intn(99)) +
+			fmt.Sprintf("Safari/537.%d", rand.Intn(99))
+
 		req, _ := http.NewRequest("GET", PAGE_URL, nil)
 		req.Header.Set("User-Agent", userAgent)
 
@@ -127,11 +127,7 @@ func main() {
 		}
 
 		log.Printf("(!) retrying %d...", retry)
-		time.Sleep(2000)
-	}
-
-	if resp == nil {
-		log.Fatal("(!) failed retry")
+		time.Sleep(2 * time.Second)
 	}
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
