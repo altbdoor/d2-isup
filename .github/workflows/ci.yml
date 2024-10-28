@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: "scripts/go.sum"
 
       - run: |
-          curl -A $USER_AGENT -Lo page.html $PAGE_URL
+          curl -L -A "$USER_AGENT" "$PAGE_URL" -o page.html
           go version
           go run main.go
         working-directory: "./scripts"
