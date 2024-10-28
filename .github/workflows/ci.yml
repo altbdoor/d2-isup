@@ -1,0 +1,46 @@
+name: Build the site
+on:
+  push:
+    branches: ["master"]
+  schedule:
+    - cron: "0 */12 * * *"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: "scripts/go.mod"
+
+      - run: |
+          go version
+          go run main.go
+        working-directory: "./scripts"
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+      - uses: actions/configure-pages@v5
+        id: pages
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "./_site"
+
+      - uses: actions/deploy-pages@v4
+        id: deployment
