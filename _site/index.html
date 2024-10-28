@@ -14,7 +14,7 @@
   </head>
   <body x-data="root">
     <header>
-      <h1 x-text="today.toLocaleString(undefined, formatOpt)">...</h1>
+      <h1 x-text="today.toLocaleString(undefined, fullDateTimeFormat)">...</h1>
       <h2 :hidden="!isMaintenance" hidden>
         <mark>
           <span :hidden="!isMaintenance" hidden>Maintenance has started.</span>
@@ -33,34 +33,51 @@
       </section>
 
       <section>
+        <div style="padding: 1rem 0">
+          <a href="?mode=24h">
+            <b x-show="timeDisplayMode === '24h'">24 hour mode</b>
+            <i x-show="timeDisplayMode === '12h'">24 hour mode</i>
+          </a>
+          <a href="?mode=12h">
+            <b x-show="timeDisplayMode === '12h'">12 hour mode</b>
+            <i x-show="timeDisplayMode === '24h'">12 hour mode</i>
+          </a>
+        </div>
+      </section>
+
+      <section>
         <template x-for="entry in activeEntries">
           <aside class="entry">
             <b
-              x-text="entry.maintenance_time_start.toLocaleDateString(undefined, formatOpt)"
+              x-text="entry.maintenance_time_start.toLocaleString(undefined, fullDateTimeFormat)"
             ></b>
             <ul>
               <li>
                 <u>Maintenance start:</u>
                 <br />
                 <span
-                  x-text="entry.maintenance_time_start.toLocaleString()"
+                  x-text="entry.maintenance_time_start.toLocaleString(undefined, fullDateTimeFormat)"
                 ></span>
               </li>
               <li x-show="entry.server_down_start.getTime() > 1000">
                 <u>Server turned off:</u>
                 <br />
-                <span x-text="entry.server_down_start.toLocaleString()"></span>
+                <span
+                  x-text="entry.server_down_start.toLocaleString(undefined, fullDateTimeFormat)"
+                ></span>
               </li>
               <li x-show="entry.server_down_end.getTime() > 1000">
                 <u>Server turned on:</u>
                 <br />
-                <span x-text="entry.server_down_end.toLocaleString()"></span>
+                <span
+                  x-text="entry.server_down_end.toLocaleString(undefined, fullDateTimeFormat)"
+                ></span>
               </li>
               <li>
                 <u>Maintenance end:</u>
                 <br />
                 <span
-                  x-text="entry.maintenance_time_end.toLocaleString()"
+                  x-text="entry.maintenance_time_end.toLocaleString(undefined, fullDateTimeFormat)"
                 ></span>
               </li>
             </ul>
@@ -71,7 +88,7 @@
       </section>
 
       <section>
-        <div style="padding-top: 2rem; text-align: center">
+        <div style="padding-top: 1rem; text-align: center">
           To be sure, please check the
           <a
             href="https://help.bungie.net/hc/en-us/articles/360049199271-Destiny-Server-and-Update-Status"
@@ -104,7 +121,7 @@
 
       document.addEventListener("alpine:init", () => {
         function root() {
-          const today = new Date();
+          const today = new Date("2024-10-28T10:00:00-07:00");
           const oneDayInMs = 1 * 24 * 60 * 60 * 1000;
 
           const todayRef = new Date(today);
@@ -112,24 +129,33 @@
           const daysBefore = new Date(todayRef.getTime() - oneDayInMs / 4);
           const daysAfter = new Date(todayRef.getTime() + 2 * oneDayInMs);
 
+          const url = new URL(window.location.href);
+          const timeDisplayMode = url.searchParams.get("mode") || "12h";
+
           /** @type {Intl.DateTimeFormatOptions} */
-          const timeNumeric = {
+          const timeFormatOpt = {
             hour: "numeric",
             minute: "numeric",
-            hour12: true,
+            hour12: timeDisplayMode === "12h",
+          };
+
+          /** @type {Intl.DateTimeFormatOptions} */
+          const dateShortFormatOpt = {
+            day: "numeric",
+            month: "short",
+            year: "numeric",
           };
 
           return {
             today,
             isMaintenance: false,
             isServerDown: false,
+            timeDisplayMode,
 
             /** @type {Intl.DateTimeFormatOptions} */
-            formatOpt: {
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-              ...timeNumeric,
+            fullDateTimeFormat: {
+              ...dateShortFormatOpt,
+              ...timeFormatOpt,
             },
 
             /** @type {MaintenanceEvent[]} */
@@ -239,9 +265,9 @@
                     const endDate = new Date(xVals[1]);
 
                     return [
-                      startDate.toLocaleTimeString(undefined, timeNumeric),
+                      startDate.toLocaleString(undefined, timeFormatOpt),
                       "-",
-                      endDate.toLocaleTimeString(undefined, timeNumeric),
+                      endDate.toLocaleString(undefined, timeFormatOpt),
                     ].join(" ");
                   },
                 },
@@ -268,12 +294,15 @@
                         callback: (value) => {
                           const tmpDate = new Date(value);
                           if (tmpDate.getHours() === 0) {
-                            return tmpDate.toLocaleDateString();
+                            return tmpDate.toLocaleString(
+                              undefined,
+                              dateShortFormatOpt,
+                            );
                           }
 
-                          return tmpDate.toLocaleTimeString(
+                          return tmpDate.toLocaleString(
                             undefined,
-                            timeNumeric,
+                            timeFormatOpt,
                           );
                         },
                         font: (ctx) => {

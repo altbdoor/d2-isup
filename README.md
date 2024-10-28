@@ -2,7 +2,6 @@
 
 Google Gemini powered, Destiny 2 down time visualizer
 
-
 ## What does it do?
 
 1. Get the HTML for [Bungie server and updates status webpage](https://help.bungie.net/hc/en-us/articles/360049199271-Destiny-Server-and-Update-Status)
@@ -14,7 +13,6 @@ Google Gemini powered, Destiny 2 down time visualizer
    1. <https://alpinejs.dev/>
 1. Website renders the down time based on web visitor's own time zone!
 1. Repeat every 12 hours
-
 
 ## Development
 
