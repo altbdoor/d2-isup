@@ -94,6 +94,7 @@ func main() {
 	// ========================================
 
 	httpClient := &http.Client{
+		Timeout: time.Minute,
 		Transport: &http.Transport{
 			// https://github.com/sweetbbak/go-cloudflare-bypass/blob/main/reqwest/reqwest.go
 			// need to somehow set a tls config?
