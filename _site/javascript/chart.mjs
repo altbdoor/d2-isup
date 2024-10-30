@@ -1,11 +1,18 @@
+import { getAdapter } from "./chart-date-adapter.mjs";
 import { dateShortFormatOpt, getTimeFormatOpt } from "./util.mjs";
 
 /**
   @param {MaintenanceEvent[]} allEntries
+  @param {Date} today
   @param {Date} daysBefore
   @param {Date} daysAfter
  */
-export const generateChart = (allEntries, daysBefore, daysAfter) => {
+export const generateChart = async (
+  allEntries,
+  today,
+  daysBefore,
+  daysAfter,
+) => {
   const timeFormatOpt = getTimeFormatOpt();
   const darkMode = window.matchMedia("(prefers-color-scheme: dark)").matches;
 
@@ -43,7 +50,7 @@ export const generateChart = (allEntries, daysBefore, daysAfter) => {
       data: [
         {
           y: 0,
-          x: [Date.now(), Date.now()],
+          x: [today.getTime(), today.getTime()],
         },
       ],
     },
@@ -75,6 +82,7 @@ export const generateChart = (allEntries, daysBefore, daysAfter) => {
   };
 
   const Chart = /** @type {CustomWindow} */ (window).Chart;
+  Chart._adapters._date.override(await getAdapter());
 
   Chart.defaults.color = darkMode ? "#fff" : "#666";
   Chart.defaults.borderColor = darkMode
@@ -134,4 +142,6 @@ export const generateChart = (allEntries, daysBefore, daysAfter) => {
       },
     },
   });
+
+  return chart;
 };

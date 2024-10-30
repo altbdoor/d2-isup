@@ -19,6 +19,6 @@ export const getUrlConfig = () => {
 
   return {
     mode: url.searchParams.get("mode") || "12h",
-    end: parseInt(url.searchParams.get("end") || "2", 10),
+    end: parseInt(url.searchParams.get("end") || "48", 10),
   };
 };

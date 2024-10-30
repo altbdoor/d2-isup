@@ -4,14 +4,16 @@ import { dateShortFormatOpt, getTimeFormatOpt, getUrlConfig } from "./util.mjs";
 document.addEventListener("alpine:init", () => {
   function root() {
     const today = new Date();
-    const oneDayInMs = 1 * 24 * 60 * 60 * 1000;
+    const oneHourInMs = 60 * 60 * 1000;
 
     const urlConfig = getUrlConfig();
-
     const todayRef = new Date(today);
     todayRef.setMinutes(0, 0, 0);
-    const daysBefore = new Date(todayRef.getTime() - oneDayInMs / 4);
-    const daysAfter = new Date(todayRef.getTime() + urlConfig.end * oneDayInMs);
+
+    const daysBefore = new Date(todayRef.getTime() - oneHourInMs);
+    const daysAfter = new Date(
+      daysBefore.getTime() + urlConfig.end * oneHourInMs,
+    );
 
     return {
       today,
@@ -48,26 +50,19 @@ document.addEventListener("alpine:init", () => {
         /** @type {any[]} */
         const res = await fetch("./data.json").then((x) => x.json());
 
-        const allEntries = res
-          .map((entry) => {
-            const entryData = Object.keys(entry).reduce((acc, key) => {
-              if (key.endsWith("_start") || key.endsWith("_end")) {
-                acc[key] = new Date(entry[key]);
-              } else {
-                acc[key] = entry[key];
-              }
+        const allEntries = res.map((entry) => {
+          const entryData = Object.keys(entry).reduce((acc, key) => {
+            if (key.endsWith("_start") || key.endsWith("_end")) {
+              acc[key] = new Date(entry[key]);
+            } else {
+              acc[key] = entry[key];
+            }
 
-              return acc;
-            }, /** @type {{ [key: string]: Date | string }} */ ({}));
+            return acc;
+          }, /** @type {{ [key: string]: Date | string }} */ ({}));
 
-            return /** @type {MaintenanceEvent} */ (entryData);
-          })
-          .filter((entry) => {
-            return (
-              entry.maintenance_time_start >= daysBefore &&
-              entry.maintenance_time_end <= daysAfter
-            );
-          });
+          return /** @type {MaintenanceEvent} */ (entryData);
+        });
 
         const activeEntries = allEntries.filter(
           (entry) =>
@@ -86,7 +81,7 @@ document.addEventListener("alpine:init", () => {
         }
 
         this.activeEntries = activeEntries;
-        generateChart(allEntries, daysBefore, daysAfter);
+        await generateChart(allEntries, today, daysBefore, daysAfter);
       },
     };
   }
