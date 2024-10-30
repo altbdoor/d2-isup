@@ -61,16 +61,16 @@
 
         <div>
           <a class="btn-mode" :href="getUrlWithConfig({ end: 12 })">
-            <b x-show="urlConfig.end === 0.5">12 hours range</b>
-            <i x-show="urlConfig.end !== 0.5">12 hours range</i>
+            <b x-show="urlConfig.end === 12">12 hours range</b>
+            <i x-show="urlConfig.end !== 12">12 hours range</i>
           </a>
           <a class="btn-mode" :href="getUrlWithConfig({ end: 24 })">
-            <b x-show="urlConfig.end === 1">1 day range</b>
-            <i x-show="urlConfig.end !== 1">1 day range</i>
+            <b x-show="urlConfig.end === 24">1 day range</b>
+            <i x-show="urlConfig.end !== 24">1 day range</i>
           </a>
           <a class="btn-mode" :href="getUrlWithConfig({ end: 48 })">
-            <b x-show="urlConfig.end === 2">2 days range</b>
-            <i x-show="urlConfig.end !== 2">2 days range</i>
+            <b x-show="urlConfig.end === 48">2 days range</b>
+            <i x-show="urlConfig.end !== 48">2 days range</i>
           </a>
         </div>
       </div>
