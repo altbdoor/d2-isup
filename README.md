@@ -12,7 +12,7 @@ Google Gemini powered, Destiny 2 down time visualizer
    1. <https://www.chartjs.org/>
    1. <https://alpinejs.dev/>
 1. Website renders the down time based on web visitor's own time zone!
-1. Repeat every 12 hours
+1. Repeat every day
 
 ## Development
 
