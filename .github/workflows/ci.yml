@@ -37,6 +37,15 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OVERRIDE_URL: ${{ secrets.OVERRIDE_URL }}
 
+      - run: |
+          GIT_HASH=$(git rev-parse --short HEAD)
+          sed -i "s|./javascript|./javascript-${GIT_HASH}|g" index.html
+          mv "./javascript" "./javascript-${GIT_HASH}"
+
+          CURRENT_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          sed -i "s|CURRENT_DATE|$CURRENT_DATE|g" index.html
+        working-directory: "./_site"
+
       - uses: actions/configure-pages@v5
         id: pages
 

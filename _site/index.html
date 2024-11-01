@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" href="./destiny-tricorn.svg" />
 
+    <meta
+      property="og:title"
+      content="d2-isup &middot; Is Destiny 2 service up?"
+    />
+    <meta
+      property="og:description"
+      content="Google Gemini powered, Destiny 2 down time visualizer"
+    />
+    <meta
+      property="og:image"
+      content="https://altbdoor.github.io/d2-isup/destiny-tricorn.svg"
+    />
+    <meta property="og:url" content="https://altbdoor.github.io/d2-isup/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="d2-isup" />
+
+    <meta name="date" content="CURRENT_DATE" />
+
     <title>d2-isup &middot; Is Destiny 2 service up?</title>
 
     <link
@@ -24,6 +42,11 @@
 
       .btn-mode > * {
         padding: 0.5rem 1rem;
+      }
+      .btn-mode.active > * {
+        font-style: normal;
+        background-color: var(--color-link);
+        color: var(--color-bg);
       }
     </style>
   </head>
@@ -49,28 +72,43 @@
 
       <div class="text-center pt-1 pb-1">
         <div>
-          <a class="btn-mode" :href="getUrlWithConfig({ mode: '24h' })">
-            <b x-show="urlConfig.mode === '24h'">24 hour mode</b>
-            <i x-show="urlConfig.mode !== '24h'">24 hour mode</i>
+          <a
+            class="btn-mode"
+            :href="getUrlWithConfig({ mode: '24h' })"
+            :class="{ 'active': urlConfig.mode === '24h' }"
+          >
+            <i>24 hour mode</i>
           </a>
-          <a class="btn-mode" :href="getUrlWithConfig({ mode: '12h' })">
-            <b x-show="urlConfig.mode === '12h'">12 hour mode</b>
-            <i x-show="urlConfig.mode !== '12h'">12 hour mode</i>
+          <a
+            class="btn-mode"
+            :href="getUrlWithConfig({ mode: '12h' })"
+            :class="{ 'active': urlConfig.mode === '12h' }"
+          >
+            <i>12 hour mode</i>
           </a>
         </div>
 
         <div>
-          <a class="btn-mode" :href="getUrlWithConfig({ end: 12 })">
-            <b x-show="urlConfig.end === 12">12 hours range</b>
-            <i x-show="urlConfig.end !== 12">12 hours range</i>
+          <a
+            class="btn-mode"
+            :href="getUrlWithConfig({ end: 12 })"
+            :class="{ 'active': urlConfig.end === 12 }"
+          >
+            <i>12 hours range</i>
           </a>
-          <a class="btn-mode" :href="getUrlWithConfig({ end: 24 })">
-            <b x-show="urlConfig.end === 24">1 day range</b>
-            <i x-show="urlConfig.end !== 24">1 day range</i>
+          <a
+            class="btn-mode"
+            :href="getUrlWithConfig({ end: 24 })"
+            :class="{ 'active': urlConfig.end === 24 }"
+          >
+            <i>1 day range</i>
           </a>
-          <a class="btn-mode" :href="getUrlWithConfig({ end: 48 })">
-            <b x-show="urlConfig.end === 48">2 days range</b>
-            <i x-show="urlConfig.end !== 48">2 days range</i>
+          <a
+            class="btn-mode"
+            :href="getUrlWithConfig({ end: 48 })"
+            :class="{ 'active': urlConfig.end === 48 }"
+          >
+            <i>2 days range</i>
           </a>
         </div>
       </div>
@@ -119,7 +157,12 @@
 
       <section>
         <div class="pt-1 text-center">
-          To be sure, please check the
+          Webpage last updated on
+          <time
+            datetime="CURRENT_DATE"
+            x-text="new Date($el.textContent).toLocaleString(undefined, fullDateTimeFormat)"
+            >CURRENT_DATE</time
+          >. To be sure, please check the
           <a
             href="https://help.bungie.net/hc/en-us/articles/360049199271-Destiny-Server-and-Update-Status"
             target="_blank"
