@@ -112,7 +112,7 @@ func main() {
 	if finalPageUrl == "" {
 		finalPageUrl = PAGE_URL
 	} else {
-		log.Print("(!) overriding url")
+		log.Print("(i) overriding url")
 	}
 
 	req, _ := http.NewRequest("GET", finalPageUrl, nil)
@@ -127,6 +127,7 @@ func main() {
 		log.Fatalf("(!) http error: %d", resp.StatusCode)
 	}
 
+	log.Print("(i) parsing document")
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	resp.Body.Close()
 
@@ -139,6 +140,7 @@ func main() {
 		log.Fatal("(!) failed to find article element")
 	}
 
+	log.Print("(i) stripping attributes")
 	article.Each(func(i int, s *goquery.Selection) {
 		for _, node := range s.Nodes {
 			removeAllAttributes(node)
@@ -168,6 +170,7 @@ func main() {
 		genai.Text(strings.ReplaceAll(systemInstruction, "'''", "```")),
 	)
 
+	log.Print("(i) contacting google gemini")
 	genResp, err := model.GenerateContent(ctx, genai.Text(content))
 	aiClient.Close()
 
@@ -189,4 +192,5 @@ func main() {
 	outputPath := filepath.Join(baseDir, "./_site/data.json")
 	outputBytes, _ := json.MarshalIndent(maintenanceData, "", "  ")
 	os.WriteFile(outputPath, outputBytes, 0644)
+	log.Print("(i) done")
 }

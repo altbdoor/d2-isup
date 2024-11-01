@@ -29,7 +29,8 @@ jobs:
           go-version-file: "scripts/go.mod"
           cache-dependency-path: "scripts/go.sum"
 
-      - run: |
+      - name: Run main script
+        run: |
           go version
           go run main.go
         working-directory: "./scripts"
@@ -37,7 +38,8 @@ jobs:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OVERRIDE_URL: ${{ secrets.OVERRIDE_URL }}
 
-      - run: |
+      - name: Cache bust and current date
+        run: |
           GIT_HASH=$(git rev-parse --short HEAD)
           sed -i "s|./javascript|./javascript-${GIT_HASH}|g" index.html
           mv "./javascript" "./javascript-${GIT_HASH}"
