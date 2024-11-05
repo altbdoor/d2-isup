@@ -3,7 +3,7 @@ on:
   push:
     branches: ["master"]
   schedule:
-    - cron: "0 18 * * *"
+    - cron: "0 */8 * * *"
 
 permissions:
   contents: read

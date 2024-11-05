@@ -48,7 +48,7 @@ document.addEventListener("alpine:init", () => {
 
       async init() {
         /** @type {any[]} */
-        const res = await fetch("./data.json").then((x) => x.json());
+        const res = await fetch("./data.json?v=" + todayRef.getTime()).then((x) => x.json());
 
         const allEntries = res.map((entry) => {
           const entryData = Object.keys(entry).reduce((acc, key) => {
