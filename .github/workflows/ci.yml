@@ -24,16 +24,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/cache@v4
+        id: cache_binary
+        with:
+          path: "./scripts/ask-gemini"
+          key: cache-binary-${{ runner.os }}-${{ hashFiles('./scripts/**/*.go') }}
+
       - uses: actions/setup-go@v5
+        if: steps.cache_binary.outputs.cache-hit != 'true'
         with:
           go-version-file: "scripts/go.mod"
           cache-dependency-path: "scripts/go.sum"
 
-      - name: Run main script
+      - name: Build go binary
+        if: steps.cache_binary.outputs.cache-hit != 'true'
+        working-directory: "./scripts/"
         run: |
-          go version
-          go run main.go
-        working-directory: "./scripts"
+          go build -ldflags "-s -w" -o ask-gemini
+
+      - name: Run main script
+        working-directory: "./scripts/"
+        run: |
+          ./ask-gemini
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           OVERRIDE_URL: ${{ secrets.OVERRIDE_URL }}
