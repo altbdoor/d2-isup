@@ -15,9 +15,9 @@ import (
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
-	"github.com/google/generative-ai-go/genai"
+	"github.com/openai/openai-go"
+	"github.com/openai/openai-go/option"
 	"golang.org/x/net/html"
-	"google.golang.org/api/option"
 )
 
 const PAGE_URL = "https://help.bungie.net/hc/en-us/articles/360049199271-Destiny-Server-and-Update-Status"
@@ -159,34 +159,48 @@ func main() {
 		log.Fatal("(!) failed to get GOOGLE_API_KEY")
 	}
 
-	ctx := context.Background()
-	aiClient, _ := genai.NewClient(ctx, option.WithAPIKey(apiKey))
-	model := aiClient.GenerativeModel("gemini-1.5-flash-latest")
-
-	model.SetTemperature(0.6)
-	model.SetMaxOutputTokens(4000)
-	model.ResponseMIMEType = "application/json"
-	model.SystemInstruction = genai.NewUserContent(
-		genai.Text(strings.ReplaceAll(systemInstruction, "'''", "```")),
+	aiClient := openai.NewClient(
+		option.WithBaseURL("https://generativelanguage.googleapis.com/v1beta/"),
+		option.WithAPIKey(apiKey),
 	)
 
-	log.Print("(i) contacting google gemini")
-	genResp, err := model.GenerateContent(ctx, genai.Text(content))
-	aiClient.Close()
+	ctx := context.Background()
+	genResp, err := aiClient.Chat.Completions.New(
+		ctx,
+		openai.ChatCompletionNewParams{
+			Model:       openai.F("gemini-1.5-flash-002"),
+			Temperature: openai.F(0.6),
+			Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
+				openai.SystemMessage(
+					strings.ReplaceAll(systemInstruction, "'''", "```"),
+				),
+				openai.UserMessage(content),
+			}),
+
+			// https://ai.google.dev/gemini-api/docs/openai
+			// ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
+			// 	openai.ResponseFormatJSONObjectParam{},
+			// ),
+			// MaxTokens:   openai.F(int64(8000)),
+		},
+	)
 
 	if err != nil {
 		log.Fatalf("(!) failed to generate content in gemini: %v", err)
 	}
 
-	maintenanceData := []MaintenanceData{}
-	for _, part := range genResp.Candidates[0].Content.Parts {
-		if txt, ok := part.(genai.Text); ok {
-			if err := json.Unmarshal([]byte(txt), &maintenanceData); err != nil {
-				log.Fatalf("(!) failed to json parse: %v", err)
-			}
+	aiResponse := genResp.Choices[0].Message.Content
 
-			break
-		}
+	// TODO: temp fix because gemini compat does not have response_format yet
+	aiResponse = strings.TrimSpace(aiResponse)
+	if strings.HasPrefix(aiResponse, "```") {
+		aiResponse = strings.TrimPrefix(aiResponse, "```json")
+		aiResponse = strings.TrimSuffix(aiResponse, "```")
+	}
+
+	maintenanceData := []MaintenanceData{}
+	if err := json.Unmarshal([]byte(aiResponse), &maintenanceData); err != nil {
+		log.Fatalf("(!) failed to json parse: %v", err)
 	}
 
 	outputPath := filepath.Join(baseDir, "./_site/data.json")
