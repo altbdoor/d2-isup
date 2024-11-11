@@ -3,8 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="./destiny-tricorn.svg" />
+    <link rel="icon" href="./destiny-tricorn.svg?v=3" />
 
+    <meta property="og:url" content="https://altbdoor.github.io/d2-isup/" />
+    <meta property="og:type" content="website" />
     <meta
       property="og:title"
       content="d2-isup &middot; Is Destiny 2 service up?"
@@ -15,11 +17,27 @@
     />
     <meta
       property="og:image"
-      content="https://altbdoor.github.io/d2-isup/destiny-tricorn.svg"
+      content="https://altbdoor.github.io/d2-isup/scott-rodgerson-PSpf_XgOM5w-unsplash.jpg"
     />
-    <meta property="og:url" content="https://altbdoor.github.io/d2-isup/" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="d2-isup" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta property="twitter:domain" content="altbdoor.github.io" />
+    <meta
+      property="twitter:url"
+      content="https://altbdoor.github.io/d2-isup/"
+    />
+    <meta
+      name="twitter:title"
+      content="d2-isup &middot; Is Destiny 2 service up?"
+    />
+    <meta
+      name="twitter:description"
+      content="Google Gemini powered, Destiny 2 down time visualizer"
+    />
+    <meta
+      name="twitter:image"
+      content="https://altbdoor.github.io/d2-isup/scott-rodgerson-PSpf_XgOM5w-unsplash.jpg"
+    />
 
     <meta name="date" content="CURRENT_DATE" />
 
@@ -158,11 +176,17 @@
       <section>
         <div class="pt-1 text-center">
           Webpage last updated on
-          <time
-            datetime="CURRENT_DATE"
-            x-text="new Date($el.textContent).toLocaleString(undefined, fullDateTimeFormat)"
-            >CURRENT_DATE</time
-          >. To be sure, please check the
+          <b
+            ><time
+              datetime="CURRENT_DATE"
+              x-text="new Date($el.textContent).toLocaleString(undefined, fullDateTimeFormat)"
+              >CURRENT_DATE</time
+            ></b
+          >. The next update is scheduled for roughly eight hours after the last
+          update.
+        </div>
+        <div class="pt-1 text-center">
+          To be sure, please check the
           <a
             href="https://help.bungie.net/hc/en-us/articles/360049199271-Destiny-Server-and-Update-Status"
             target="_blank"
@@ -188,7 +212,40 @@
 
     <footer class="text-center">
       <hr />
-      <a href="https://github.com/altbdoor/d2-isup">GitHub</a>
+      <div>
+        Favicon image by
+        <a
+          href="https://www.svgrepo.com/author/justrealmilk/"
+          referrerpolicy="no-referrer"
+          >justrealmilk</a
+        >
+        on
+        <a
+          href="https://www.svgrepo.com/svg/358846/destiny"
+          referrerpolicy="no-referrer"
+          >SVG Repo</a
+        >. Splash image by
+        <a
+          href="https://unsplash.com/@scottrodgerson?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+          referrerpolicy="no-referrer"
+          >Scott Rodgerson</a
+        >
+        on
+        <a
+          href="https://unsplash.com/photos/a-bunch-of-blue-wires-connected-to-each-other-PSpf_XgOM5w?utm_content=creditCopyText&utm_medium=referral&utm_source=unsplash"
+          referrerpolicy="no-referrer"
+          >Unsplash</a
+        >.
+      </div>
+      <div class="pt-1">
+        &mdash;
+        <a
+          href="https://github.com/altbdoor/d2-isup"
+          referrerpolicy="no-referrer"
+          >GitHub</a
+        >
+        &mdash;
+      </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
