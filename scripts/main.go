@@ -168,20 +168,21 @@ func main() {
 	genResp, err := aiClient.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
-			Model:       openai.F("gemini-1.5-flash-002"),
-			Temperature: openai.F(0.6),
+			Model:       openai.String("gemini-1.5-flash-002"),
+			Temperature: openai.Float(0.6),
 			Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
 				openai.SystemMessage(
 					strings.ReplaceAll(systemInstruction, "'''", "```"),
 				),
 				openai.UserMessage(content),
 			}),
+			MaxTokens: openai.Int(8000),
+			N:         openai.Int(1),
 
 			// https://ai.google.dev/gemini-api/docs/openai
 			// ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
 			// 	openai.ResponseFormatJSONObjectParam{},
 			// ),
-			// MaxTokens:   openai.F(int64(8000)),
 		},
 	)
 
