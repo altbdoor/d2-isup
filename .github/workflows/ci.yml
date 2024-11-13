@@ -28,7 +28,7 @@ jobs:
         id: cache_binary
         with:
           path: "./scripts/ask-gemini"
-          key: cache-binary-${{ runner.os }}-${{ hashFiles('./scripts/**/*.go') }}
+          key: cache-binary-${{ runner.os }}-${{ hashFiles('./scripts/**/*') }}
 
       - uses: actions/setup-go@v5
         if: steps.cache_binary.outputs.cache-hit != 'true'
