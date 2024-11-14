@@ -81,15 +81,37 @@ export const generateChart = async (
     },
   };
 
-  const Chart = /** @type {CustomWindow} */ (window).Chart;
-  Chart._adapters._date.override(await getAdapter());
+  const chartComponents = [
+    "BarController",
+    "BarElement",
+    "Legend",
+    "Tooltip",
+    "TimeScale",
+    "CategoryScale",
+  ];
 
-  Chart.defaults.color = darkMode ? "#fff" : "#666";
-  Chart.defaults.borderColor = darkMode
+  const chartImportUrl = new URL("https://esm.sh/chart.js@4.4.6");
+  chartImportUrl.searchParams.set("bundle-deps", "");
+  chartImportUrl.searchParams.set(
+    "exports",
+    [...chartComponents, "_adapters", "Chart"].join(","),
+  );
+
+  // @ts-ignore
+  const chartlib = await import(chartImportUrl.toString());
+
+  chartComponents.forEach((chartComp) => {
+    chartlib.Chart.register(chartlib[chartComp]);
+  });
+
+  chartlib._adapters._date.override(await getAdapter());
+
+  chartlib.Chart.defaults.color = darkMode ? "#fff" : "#666";
+  chartlib.Chart.defaults.borderColor = darkMode
     ? "rgba(255, 255, 255, 0.3)"
     : "rgba(0, 0, 0, 0.1)";
 
-  const chart = new Chart(document.getElementById("chart"), {
+  const chart = new chartlib.Chart(document.getElementById("chart"), {
     type: "bar",
     data: { datasets },
     options: {
