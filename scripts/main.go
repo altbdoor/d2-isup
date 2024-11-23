@@ -168,21 +168,21 @@ func main() {
 	genResp, err := aiClient.Chat.Completions.New(
 		ctx,
 		openai.ChatCompletionNewParams{
-			Model:       openai.String("gemini-1.5-flash-002"),
+			Model:       openai.String("gemini-1.5-flash"),
 			Temperature: openai.Float(0.6),
+			MaxTokens:   openai.Int(8000),
+			N:           openai.Int(1),
 			Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
 				openai.SystemMessage(
 					strings.ReplaceAll(systemInstruction, "'''", "```"),
 				),
 				openai.UserMessage(content),
 			}),
-			MaxTokens: openai.Int(8000),
-			N:         openai.Int(1),
-
-			// https://ai.google.dev/gemini-api/docs/openai
-			// ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
-			// 	openai.ResponseFormatJSONObjectParam{},
-			// ),
+			ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
+				openai.ResponseFormatJSONObjectParam{
+					Type: openai.F(openai.ResponseFormatJSONObjectTypeJSONObject),
+				},
+			),
 		},
 	)
 
@@ -191,13 +191,6 @@ func main() {
 	}
 
 	aiResponse := genResp.Choices[0].Message.Content
-
-	// TODO: temp fix because gemini compat does not have response_format yet
-	aiResponse = strings.TrimSpace(aiResponse)
-	if strings.HasPrefix(aiResponse, "```") {
-		aiResponse = strings.TrimPrefix(aiResponse, "```json")
-		aiResponse = strings.TrimSuffix(aiResponse, "```")
-	}
 
 	maintenanceData := []MaintenanceData{}
 	if err := json.Unmarshal([]byte(aiResponse), &maintenanceData); err != nil {

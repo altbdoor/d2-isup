@@ -4,7 +4,7 @@ go 1.23
 
 require (
 	github.com/PuerkitoBio/goquery v1.10.0
-	github.com/openai/openai-go v0.1.0-alpha.37
+	github.com/openai/openai-go v0.1.0-alpha.38
 	golang.org/x/net v0.31.0
 )
 
