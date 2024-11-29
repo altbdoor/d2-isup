@@ -10,7 +10,7 @@ const FORMATS = {};
 
 export const getAdapter = async () => {
   // @ts-ignore
-  const mod = await import("https://esm.sh/dayjs@1.11.13");
+  const mod = await import("https://cdn.jsdelivr.net/npm/dayjs@1.11.13/+esm");
   const dayjs = mod.default;
 
   return {

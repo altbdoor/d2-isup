@@ -90,15 +90,10 @@ export const generateChart = async (
     "CategoryScale",
   ];
 
-  const chartImportUrl = new URL("https://esm.sh/chart.js@4.4.6");
-  chartImportUrl.searchParams.set("bundle-deps", "");
-  chartImportUrl.searchParams.set(
-    "exports",
-    [...chartComponents, "_adapters", "Chart"].join(","),
-  );
-
   // @ts-ignore
-  const chartlib = await import(chartImportUrl.toString());
+  const chartlib = await import(
+    "https://cdn.jsdelivr.net/npm/chart.js@4.4.6/+esm"
+  );
 
   chartComponents.forEach((chartComp) => {
     chartlib.Chart.register(chartlib[chartComp]);
