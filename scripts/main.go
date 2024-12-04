@@ -160,7 +160,7 @@ func main() {
 	}
 
 	aiClient := openai.NewClient(
-		option.WithBaseURL("https://generativelanguage.googleapis.com/v1beta/"),
+		option.WithBaseURL("https://generativelanguage.googleapis.com/v1beta/openai/"),
 		option.WithAPIKey(apiKey),
 	)
 
