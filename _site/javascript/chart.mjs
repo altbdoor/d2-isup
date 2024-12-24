@@ -90,9 +90,9 @@ export const generateChart = async (
     "CategoryScale",
   ];
 
-  // @ts-ignore
   const chartlib = await import(
-    "https://cdn.jsdelivr.net/npm/chart.js@4.4.6/+esm"
+    // @ts-ignore
+    "https://cdn.jsdelivr.net/npm/chart.js@4.4.7/+esm"
   );
 
   chartComponents.forEach((chartComp) => {
