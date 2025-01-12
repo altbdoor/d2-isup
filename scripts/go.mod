@@ -3,9 +3,9 @@ module github.com/altbdoor/d2-isup/scripts
 go 1.23
 
 require (
-	github.com/PuerkitoBio/goquery v1.10.0
-	github.com/openai/openai-go v0.1.0-alpha.41
-	golang.org/x/net v0.33.0
+	github.com/PuerkitoBio/goquery v1.10.1
+	github.com/openai/openai-go v0.1.0-alpha.45
+	golang.org/x/net v0.34.0
 )
 
 require (
