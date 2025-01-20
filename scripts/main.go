@@ -112,7 +112,7 @@ func main() {
 	if finalPageUrl == "" {
 		finalPageUrl = PAGE_URL
 	} else {
-		log.Print("(i) overriding url")
+		log.Println("(i) overriding url")
 	}
 
 	req, _ := http.NewRequest("GET", finalPageUrl, nil)
@@ -127,7 +127,7 @@ func main() {
 		log.Fatalf("(!) http error: %d", resp.StatusCode)
 	}
 
-	log.Print("(i) parsing document")
+	log.Println("(i) parsing document")
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	resp.Body.Close()
 
@@ -137,10 +137,10 @@ func main() {
 
 	article := doc.Find("[itemprop='articleBody']").First()
 	if article.Length() == 0 {
-		log.Fatal("(!) failed to find article element")
+		log.Fatalln("(!) failed to find article element")
 	}
 
-	log.Print("(i) stripping attributes")
+	log.Println("(i) stripping attributes")
 	article.Each(func(i int, s *goquery.Selection) {
 		for _, node := range s.Nodes {
 			removeAllAttributes(node)
@@ -156,7 +156,7 @@ func main() {
 
 	apiKey := os.Getenv("GOOGLE_API_KEY")
 	if apiKey == "" {
-		log.Fatal("(!) failed to get GOOGLE_API_KEY")
+		log.Fatalln("(!) failed to get GOOGLE_API_KEY")
 	}
 
 	aiClient := openai.NewClient(
@@ -165,29 +165,44 @@ func main() {
 	)
 
 	ctx := context.Background()
-	genResp, err := aiClient.Chat.Completions.New(
-		ctx,
-		openai.ChatCompletionNewParams{
-			Model:       openai.String("gemini-1.5-flash"),
-			Temperature: openai.Float(0.6),
-			MaxTokens:   openai.Int(8000),
-			N:           openai.Int(1),
-			Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
-				openai.SystemMessage(
-					strings.ReplaceAll(systemInstruction, "'''", "```"),
-				),
-				openai.UserMessage(content),
-			}),
-			ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
-				openai.ResponseFormatJSONObjectParam{
-					Type: openai.F(openai.ResponseFormatJSONObjectTypeJSONObject),
-				},
-			),
-		},
-	)
+	var genResp *openai.ChatCompletion
+	attempts := 0
+	maxAttempts := 5
 
-	if err != nil {
-		log.Fatalf("(!) failed to generate content in gemini: %v", err)
+	for attempts < maxAttempts {
+		genResp, err = aiClient.Chat.Completions.New(
+			ctx,
+			openai.ChatCompletionNewParams{
+				Model:       openai.String("gemini-1.5-flash"),
+				Temperature: openai.Float(0.6),
+				MaxTokens:   openai.Int(8000),
+				N:           openai.Int(1),
+				Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
+					openai.SystemMessage(
+						strings.ReplaceAll(systemInstruction, "'''", "```"),
+					),
+					openai.UserMessage(content),
+				}),
+				ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
+					openai.ResponseFormatJSONObjectParam{
+						Type: openai.F(openai.ResponseFormatJSONObjectTypeJSONObject),
+					},
+				),
+			},
+		)
+
+		if err == nil {
+			break
+		}
+
+		attempts++
+		log.Printf("(!) attempt %d, failed to generate content in gemini: %v\n", attempts, err)
+		log.Println("(!) retrying...")
+		time.Sleep(2 * time.Second)
+	}
+
+	if attempts == maxAttempts {
+		log.Fatalln("(!) max retries reached")
 	}
 
 	aiResponse := genResp.Choices[0].Message.Content
@@ -200,5 +215,5 @@ func main() {
 	outputPath := filepath.Join(baseDir, "./_site/data.json")
 	outputBytes, _ := json.MarshalIndent(maintenanceData, "", "  ")
 	os.WriteFile(outputPath, outputBytes, 0644)
-	log.Print("(i) done")
+	log.Println("(i) done")
 }
