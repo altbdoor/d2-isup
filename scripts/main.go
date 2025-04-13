@@ -18,7 +18,7 @@ import (
 	"github.com/openai/openai-go/option"
 )
 
-const PAGE_URL = "https://mastodon.social/@bungiehelp.rss"
+const PAGE_URL = "https://bsky.app/profile/bungiehelp.bungie.net/rss"
 
 const systemInstruction = `You are an expert data parser specializing in extracting information from XML RSS feeds, specifically the Destiny 2 Twitter feed.
 
@@ -124,7 +124,7 @@ func main() {
 	}
 
 	log.Println("(i) parsing document")
-	var rss MastodonRss
+	var rss Rss
 	decoder := xml.NewDecoder(resp.Body)
 	err = decoder.Decode(&rss)
 

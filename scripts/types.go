@@ -5,14 +5,14 @@ import (
 	"time"
 )
 
-type MastodonRss struct {
+type Rss struct {
 	XMLName xml.Name `xml:"rss"`
 	Channel struct {
-		Items []MastodonRssItem `xml:"item"`
+		Items []RssItem `xml:"item"`
 	} `xml:"channel"`
 }
 
-type MastodonRssItem struct {
+type RssItem struct {
 	XMLName     xml.Name `xml:"item"`
 	Description string   `xml:"description"`
 	// Guid        string   `xml:"guid"`
