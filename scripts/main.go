@@ -16,6 +16,7 @@ import (
 
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
+	"github.com/openai/openai-go/shared"
 )
 
 const PAGE_URL = "https://bsky.app/profile/bungiehelp.bungie.net/rss"
@@ -162,21 +163,19 @@ func main() {
 		genResp, err = aiClient.Chat.Completions.New(
 			ctx,
 			openai.ChatCompletionNewParams{
-				Model:       openai.String("gemini-2.0-flash"),
+				Model:       shared.ChatModel("gemini-2.0-flash"),
 				Temperature: openai.Float(0.6),
 				MaxTokens:   openai.Int(8000),
 				N:           openai.Int(1),
-				Messages: openai.F([]openai.ChatCompletionMessageParamUnion{
+				Messages: []openai.ChatCompletionMessageParamUnion{
 					openai.SystemMessage(
 						strings.ReplaceAll(systemInstruction, "'''", "```"),
 					),
 					openai.UserMessage(content),
-				}),
-				ResponseFormat: openai.F[openai.ChatCompletionNewParamsResponseFormatUnion](
-					openai.ResponseFormatJSONObjectParam{
-						Type: openai.F(openai.ResponseFormatJSONObjectTypeJSONObject),
-					},
-				),
+				},
+				ResponseFormat: openai.ChatCompletionNewParamsResponseFormatUnion{
+					OfJSONObject: &shared.ResponseFormatJSONObjectParam{},
+				},
 			},
 		)
 
