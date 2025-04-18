@@ -19,7 +19,7 @@ import (
 	"github.com/openai/openai-go/shared"
 )
 
-const PAGE_URL = "https://bsky.app/profile/bungiehelp.bungie.net/rss"
+const PAGE_URL = "https://mastodon.social/@bungiehelp.rss"
 
 const systemInstruction = `You are an expert data parser specializing in extracting information from XML RSS feeds, specifically the Destiny 2 Twitter feed.
 
