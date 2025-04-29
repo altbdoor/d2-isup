@@ -19,7 +19,7 @@ import (
 	"github.com/openai/openai-go/shared"
 )
 
-const PAGE_URL = "https://mastodon.social/@bungiehelp.rss"
+const PAGE_URL = "https://bsky.app/profile/did:plc:pekfvt52gjy5qunf3jcdvze4/rss"
 
 const systemInstruction = `You are an expert data parser specializing in extracting information from XML RSS feeds, specifically the Destiny 2 Twitter feed.
 
@@ -149,6 +149,7 @@ func main() {
 		log.Fatalln("(!) failed to get GOOGLE_API_KEY")
 	}
 
+	log.Println("(i) contacting google gemini")
 	aiClient := openai.NewClient(
 		option.WithBaseURL("https://generativelanguage.googleapis.com/v1beta/openai/"),
 		option.WithAPIKey(apiKey),

@@ -1,6 +1,6 @@
 module github.com/altbdoor/d2-isup/scripts
 
-go 1.23
+go 1.24
 
 require github.com/openai/openai-go v0.1.0-beta.10
 

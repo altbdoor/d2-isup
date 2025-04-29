@@ -92,7 +92,7 @@ export const generateChart = async (
 
   const chartlib = await import(
     // @ts-ignore
-    "https://cdn.jsdelivr.net/npm/chart.js@4.4.8/+esm"
+    "https://cdn.jsdelivr.net/npm/chart.js@4.4.9/+esm"
   );
 
   chartComponents.forEach((chartComp) => {
