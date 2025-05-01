@@ -8,7 +8,7 @@ Google Gemini powered, Destiny 2 down time visualizer
    1. This page has become too unreliable to web scrape with all the protection it has
 1. Get the XML RSS feed from [Bluesky Bungie Server Status](https://bsky.app/profile/did:plc:pekfvt52gjy5qunf3jcdvze4)
 1. Pass the content to Google Gemini, and ask Google Gemini to return a JSON data on maintenance and down time
-   1. See the prompt in `scripts/main.go`!
+   1. See the prompt in `scripts/prompt.md`!
 1. Serve the website on GitHub Pages with:
    1. <https://github.com/andybrewer/mvp>
    1. <https://www.chartjs.org/>

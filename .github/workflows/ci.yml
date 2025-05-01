@@ -45,10 +45,9 @@ jobs:
       - name: Run main script
         working-directory: "./scripts/"
         run: |
-          ./ask-gemini
+          ./ask-gemini --rss --gemini --outFile ../_site/data.json
         env:
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          OVERRIDE_URL: ${{ secrets.OVERRIDE_URL }}
 
       - name: Cache bust and current date
         run: |
