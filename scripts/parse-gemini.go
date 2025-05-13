@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/openai/openai-go"
@@ -32,6 +33,9 @@ func ParseGemini(prompt, rssXml string) ([]byte, error) {
 	var genResp *openai.ChatCompletion
 	attempts := 0
 
+	now := time.Now()
+	fixedPrompt := strings.ReplaceAll(prompt, "__CURRENT_DATE__", now.Format(time.RFC3339))
+
 	for attempts < MAX_ATTEMPTS {
 		genResp, err = aiClient.Chat.Completions.New(
 			ctx,
@@ -41,7 +45,7 @@ func ParseGemini(prompt, rssXml string) ([]byte, error) {
 				MaxTokens:   openai.Int(8000),
 				N:           openai.Int(1),
 				Messages: []openai.ChatCompletionMessageParamUnion{
-					openai.SystemMessage(prompt),
+					openai.SystemMessage(fixedPrompt),
 					openai.UserMessage("```xml\n" + rssXml + "\n```"),
 				},
 				ResponseFormat: openai.ChatCompletionNewParamsResponseFormatUnion{
