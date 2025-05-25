@@ -1,0 +1,64 @@
+name: Poll Bluesky RSS MD5
+on:
+  push:
+    paths:
+      - ".github/workflows/rss-poll.yml"
+  schedule:
+    # every 2 hours
+    - cron: "0 */2 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  build:
+    env:
+      BLUESKY_RSS_URL: "https://bsky.app/profile/did:plc:pekfvt52gjy5qunf3jcdvze4/rss"
+      RSS_MD5_CACHE_KEY: "rss-md5-v1"
+
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/cache/restore@v4
+        id: cache_rss_restore
+        with:
+          path: rss-md5.txt
+          key: ${{ env.RSS_MD5_CACHE_KEY }}
+
+      - name: MD5 the Bluesky RSS
+        id: check_post
+        run: |
+          curl --silent "$BLUESKY_RSS_URL" --output rss.xml
+          current_md5=$(md5sum rss.xml | cut -d ' ' -f1)
+
+          cached_md5=""
+          if [ -f rss-md5.txt ]; then
+            cached_md5=$(cat rss-md5.txt)
+          fi
+
+          echo "Current MD5: $current_md5"
+          echo "Cached MD5: $cached_md5"
+          echo "$current_md5" > rss-md5.txt
+
+          if [ "$current_md5" != "$cached_md5" ]; then
+            echo "New content detected!"
+            echo "NEW_POST=true" >> $GITHUB_ENV
+          else
+            echo "No new content."
+            echo "NEW_POST=false" >> $GITHUB_ENV
+          fi
+
+      - name: Delete old cache
+        if: steps.cache_rss_restore.outputs.cache-hit == 'true'
+        run: gh cache delete "${{ env.RSS_MD5_CACHE_KEY }}"
+        env:
+          GH_TOKEN: ${{ secrets.REPO_PAT }}
+
+      - uses: actions/cache/save@v4
+        id: cache_rss_save
+        with:
+          path: rss-md5.txt
+          key: ${{ env.RSS_MD5_CACHE_KEY }}
+
+      - name: Trigger build workflow if new post
+        if: steps.check_post.outputs.NEW_POST == 'true'
+        run: gh workflow run ci.yml --field event_type=site_build_webhook
+        env:
+          GH_TOKEN: ${{ secrets.REPO_PAT }}
