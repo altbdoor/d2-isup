@@ -2,7 +2,7 @@ name: Poll Bluesky RSS MD5
 on:
   push:
     paths:
-      - ".github/workflows/rss-poll.yml"
+      - .github/workflows/rss-poll.yml
   schedule:
     # every 2 hours
     - cron: "0 */2 * * *"
@@ -39,10 +39,10 @@ jobs:
 
           if [ "$current_md5" != "$cached_md5" ]; then
             echo "New content detected!"
-            echo "NEW_POST=true" >> $GITHUB_ENV
+            echo "NEW_POST=true" >> $GITHUB_OUTPUT
           else
             echo "No new content."
-            echo "NEW_POST=false" >> $GITHUB_ENV
+            echo "NEW_POST=false" >> $GITHUB_OUTPUT
           fi
 
       - name: Delete old cache

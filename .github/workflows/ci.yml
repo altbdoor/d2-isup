@@ -1,7 +1,10 @@
 name: Build the site
 on:
   push:
-    branches: ["master"]
+    paths:
+      - "_site/**"
+      - "scripts/**"
+      - .github/workflows/ci.yml
   repository_dispatch:
     types: ["site_build_webhook"]
   workflow_dispatch: {}
