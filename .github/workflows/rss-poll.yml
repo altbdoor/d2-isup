@@ -48,12 +48,13 @@ jobs:
           fi
 
       - name: Delete old cache
-        if: steps.cache_rss_restore.outputs.cache-hit == 'true'
+        if: steps.check_post.outputs.NEW_POST == 'true'
         run: gh cache delete "${{ env.RSS_MD5_CACHE_KEY }}"
         env:
           GH_TOKEN: ${{ secrets.REPO_PAT }}
 
       - uses: actions/cache/save@v4
+        if: steps.check_post.outputs.NEW_POST == 'true'
         id: cache_rss_save
         with:
           path: rss-md5.txt
