@@ -24,9 +24,10 @@ func ParseGemini(prompt, rssXml string) ([]byte, error) {
 		return nil, fmt.Errorf("failed to get GOOGLE_API_KEY env")
 	}
 
-	aiClient := openai.NewClient(
+	client := openai.NewClient(
 		option.WithBaseURL("https://generativelanguage.googleapis.com/v1beta/openai/"),
 		option.WithAPIKey(apiKey),
+		option.WithMaxRetries(0),
 	)
 
 	ctx := context.Background()
@@ -37,10 +38,10 @@ func ParseGemini(prompt, rssXml string) ([]byte, error) {
 	fixedPrompt := strings.ReplaceAll(prompt, "__CURRENT_DATE__", now.Format(time.RFC3339))
 
 	for attempts < MAX_ATTEMPTS {
-		genResp, err = aiClient.Chat.Completions.New(
+		genResp, err = client.Chat.Completions.New(
 			ctx,
 			openai.ChatCompletionNewParams{
-				Model:       shared.ChatModel("gemini-2.0-flash"),
+				Model:       shared.ChatModel("gemini-2.0-flash-lite"),
 				Temperature: openai.Float(0.6),
 				MaxTokens:   openai.Int(8000),
 				N:           openai.Int(1),
@@ -52,6 +53,7 @@ func ParseGemini(prompt, rssXml string) ([]byte, error) {
 					OfJSONObject: &shared.ResponseFormatJSONObjectParam{},
 				},
 			},
+			option.WithRequestTimeout(10*time.Second),
 		)
 
 		if err == nil {

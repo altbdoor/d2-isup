@@ -5,8 +5,6 @@ on:
       - "_site/**"
       - "scripts/**"
       - .github/workflows/ci.yml
-  repository_dispatch:
-    types: ["site_build_webhook"]
   workflow_dispatch: {}
   # schedule:
   #   - cron: "0 1,9,17 * * *"

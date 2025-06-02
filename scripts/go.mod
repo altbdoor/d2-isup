@@ -2,7 +2,7 @@ module github.com/altbdoor/d2-isup/scripts
 
 go 1.24
 
-require github.com/openai/openai-go v0.1.0-beta.10
+require github.com/openai/openai-go v1.2.0
 
 require (
 	github.com/tidwall/gjson v1.18.0 // indirect
