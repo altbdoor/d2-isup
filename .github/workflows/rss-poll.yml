@@ -47,6 +47,12 @@ jobs:
             echo "NEW_POST=false" >> $GITHUB_OUTPUT
           fi
 
+      - name: Trigger build workflow if new post
+        if: steps.check_post.outputs.NEW_POST == 'true'
+        run: gh workflow run ci.yml
+        env:
+          GH_TOKEN: ${{ secrets.REPO_PAT }}
+
       - name: Delete old cache
         if: steps.check_post.outputs.NEW_POST == 'true'
         run: gh cache delete "${{ env.RSS_MD5_CACHE_KEY }}"
@@ -59,9 +65,3 @@ jobs:
         with:
           path: rss-md5.txt
           key: ${{ env.RSS_MD5_CACHE_KEY }}
-
-      - name: Trigger build workflow if new post
-        if: steps.check_post.outputs.NEW_POST == 'true'
-        run: gh workflow run ci.yml --field event_type=site_build_webhook
-        env:
-          GH_TOKEN: ${{ secrets.REPO_PAT }}
